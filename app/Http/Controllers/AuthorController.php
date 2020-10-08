@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Author;
+use Validator;
+use App\User;
 
 class AuthorController extends Controller
 {
@@ -21,6 +22,11 @@ class AuthorController extends Controller
         }else{
             return response(["message" => "Data not found", "data" => null], 404);
         }
+    }
+
+    public function _construct(){
+        $this->middleware('auth:api');
+
     }
 
     /**
@@ -99,6 +105,9 @@ class AuthorController extends Controller
             $author->hp = $request->hp;
 
             $author->save();
+            return response(['message'=> 'Update data success.', 'data'=> $author], 200);
+            }else{
+            return response(['message'=> 'Update data failed.', 'data'=> null], 406);
         }
         return $author;
     }
@@ -111,6 +120,13 @@ class AuthorController extends Controller
      */
     public function destroy($id)
     {
-        return Author::destroy($id);
+        $author = Author::find($id);
+        if($author){
+            $author->delete();
+            return response([], 204);
+        }else{
+            return response(['message'=> 'Remove data failed.', 'data'=> null], 406);
+            
+        }
     }
 }
